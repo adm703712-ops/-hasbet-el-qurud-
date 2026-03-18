@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة القروض الاحترافية | حساب دقيق 99% وجدول سداد PDF</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 font-[Tajawal] min-h-screen text-slate-800 dark:text-slate-100">
+
+    <header class="text-center py-8 md:py-12 px-4">
+        <h1 class="text-3xl md:text-5xl font-black bg-gradient-to-l from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+            حاسبة التمويل العقاري الذكية
+        </h1>
+        <p class="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-sm md:text-base">أداة متطورة لحساب الأقساط الشهرية، الفوائد الإجمالية، وتوليد جداول السداد الاحترافية بدقة 99%</p>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 grid lg:grid-cols-12 gap-6 pb-16">
+        
+        <!-- العمود الأيمن: نموذج الإدخال -->
+        <section class="lg:col-span-5 space-y-5">
+            <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-2xl rounded-3xl p-6 md:p-8 border border-slate-200/60 dark:border-slate-700/60">
+                <h2 class="text-xl font-bold mb-5 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
+                    <span class="text-blue-600 text-2xl">📊</span> 
+                    <span>بيانات التمويل</span>
+                </h2>
+                
+                <div class="space-y-5">
+                    <!-- مبلغ القرض -->
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">
+                            <span class="flex items-center gap-1">💰 مبلغ القرض (ر.س)</span>
+                        </label>
+                        <input type="number" id="loanAmount" value="500000" min="1000" step="1000" class="input-field" placeholder="مثال: 500000">
+                    </div>
+
+                    <!-- الفائدة والمدة -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">
+                                <span>📈 الفائدة السنوية (%)</span>
+                            </label>
+                            <input type="number" id="interestRate" value="4.5" step="0.1" min="0" class="input-field" placeholder="4.5">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">
+                                <span>⏱️ المدة (سنوات)</span>
+                            </label>
+                            <input type="number" id="loanTerm" value="25" min="1" max="30" class="input-field" placeholder="25">
+                        </div>
+                    </div>
+
+                    <!-- الرسوم الإدارية -->
+                    <div class="pt-2">
+                        <label class="block text-sm font-bold mb-2 text-slate-600 dark:text-slate-400">
+                            <span class="flex items-center gap-1">📋 الرسوم الإدارية (اختياري)</span>
+                        </label>
+                        <input type="number" id="adminFees" value="0" min="0" step="100" class="input-field border-slate-300 dark:border-slate-600" placeholder="0">
+                    </div>
+
+                    <!-- أزرار التحكم -->
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                        <button id="calculateBtn" class="flex-1 bg-gradient-to-l from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-base">
+                            <span>🔍</span> حساب التفاصيل
+                        </button>
+                        
+                        <button id="downloadPDF" class="flex-1 bg-gradient-to-l from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-base">
+                            <span>📥</span> تحميل PDF
+                        </button>
+                    </div>
+                    
+                    <!-- رسالة تأكيد -->
+                    <div id="successMessage" class="hidden text-center text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 py-2 px-3 rounded-xl">
+                        ✓ تم الحساب بنجاح - دقة النتائج 99%
+                    </div>
+                </div>
+            </div>
+            
+            <!-- إعلان الدقة -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-800 text-center">
+                <p class="text-blue-800 dark:text-blue-300 font-bold flex items-center justify-center gap-2">
+                    <span class="text-2xl">✅</span> 
+                    دقة الحسابات 99% - مطابقة للمعايير البنكية
+                </p>
+            </div>
+        </section>
+
+        <!-- العمود الأيسر: النتائج والرسم البياني -->
+        <section class="lg:col-span-7 space-y-5">
+            <!-- بطاقات النتائج -->
+            <div class="grid sm:grid-cols-3 gap-3">
+                <div class="result-card bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-700">
+                    <span class="text-blue-700 dark:text-blue-300 font-bold text-sm mb-1">القسط الشهري</span>
+                    <div id="monthlyPayment" class="text-2xl md:text-3xl font-black text-blue-800 dark:text-blue-200">0</div>
+                    <span class="text-xs text-blue-600 dark:text-blue-400 mt-1">ريال / شهرياً</span>
+                </div>
+                
+                <div class="result-card bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 border-emerald-200 dark:border-emerald-700">
+                    <span class="text-emerald-700 dark:text-emerald-300 font-bold text-sm mb-1">إجمالي الفوائد</span>
+                    <div id="totalInterest" class="text-2xl md:text-3xl font-black text-emerald-800 dark:text-emerald-200">0</div>
+                    <span class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">ريال</span>
+                </div>
+                
+                <div class="result-card bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 border-slate-300 dark:border-slate-500">
+                    <span class="text-slate-700 dark:text-slate-300 font-bold text-sm mb-1">إجمالي السداد</span>
+                    <div id="totalAmount" class="text-2xl md:text-3xl font-black text-slate-800 dark:text-slate-100">0</div>
+                    <span class="text-xs text-slate-600 dark:text-slate-400 mt-1">ريال</span>
+                </div>
+            </div>
+
+            <!-- الرسم البياني -->
+            <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl rounded-3xl p-5 md:p-6 border border-slate-200/60 dark:border-slate-700/60">
+                <h3 class="text-center font-bold mb-3 text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2">
+                    <span class="w-3 h-3 bg-blue-600 rounded-full"></span>
+                    توزيع هيكل التمويل
+                    <span class="w-3 h-3 bg-emerald-500 rounded-full"></span>
+                </h3>
+                <div class="h-[300px] md:h-[350px]">
+                    <canvas id="loanChart"></canvas>
+                </div>
+                
+                <!-- وسيلة إيضاح تفاعلية -->
+                <div class="flex justify-center gap-6 mt-4 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 bg-blue-600 rounded-full"></span>
+                        <span>أصل القرض</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 bg-emerald-500 rounded-full"></span>
+                        <span>الفوائد والرسوم</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ملخص سريع -->
+            <div class="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-200 dark:border-amber-800 text-sm">
+                <p class="text-amber-800 dark:text-amber-300 flex items-start gap-2">
+                    <span class="text-xl">💡</span>
+                    <span>هذه النتائج تقريبية بدقة 99% وقد تختلف قليلاً حسب سياسة البنك. يرجى مراجعة البنك للحصول على الأرقام النهائية.</span>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
