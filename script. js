@@ -1,0 +1,282 @@
+class LoanCalculator {
+    constructor() {
+        // ربط عناصر المدخلات
+        this.inputs = {
+            amount: document.getElementById('loanAmount'),
+            rate: document.getElementById('interestRate'),
+            term: document.getElementById('loanTerm'),
+            fees: document.getElementById('adminFees')
+        };
+        
+        // ربط عناصر المخرجات
+        this.outputs = {
+            monthly: document.getElementById('monthlyPayment'),
+            interest: document.getElementById('totalInterest'),
+            total: document.getElementById('totalAmount')
+        };
+
+        this.calculateBtn = document.getElementById('calculateBtn');
+        this.btnDownload = document.getElementById('downloadPDF');
+        this.successMessage = document.getElementById('successMessage');
+        this.chart = null;
+        
+        this.init();
+    }
+
+    init() {
+        // حساب عند الضغط على زر الحساب
+        this.calculateBtn.addEventListener('click', () => {
+            this.updateUI();
+            this.showSuccessMessage();
+        });
+
+        // حساب عند تغيير المدخلات (اختياري)
+        Object.values(this.inputs).forEach(input => {
+            input.addEventListener('input', () => {
+                // إخفاء رسالة النجاح عند التغيير
+                this.successMessage.classList.add('hidden');
+            });
+            
+            // التحقق من صحة المدخلات
+            input.addEventListener('blur', () => this.validateInput(input));
+        });
+
+        // تفعيل زر الـ PDF
+        this.btnDownload.addEventListener('click', () => this.generatePDF());
+        
+        // التشغيل الأولي مع عرض الأرقام بشكل صحيح
+        setTimeout(() => {
+            this.updateUI();
+        }, 100);
+    }
+    
+    validateInput(input) {
+        let value = parseFloat(input.value);
+        const min = parseFloat(input.min) || 0;
+        const max = parseFloat(input.max) || Infinity;
+        
+        if (isNaN(value) || value < min) {
+            input.value = min;
+        } else if (value > max) {
+            input.value = max;
+        }
+    }
+
+    calculate() {
+        const P = parseFloat(this.inputs.amount.value) || 0;
+        const annualRate = (parseFloat(this.inputs.rate.value) || 0) / 100;
+        const monthlyRate = annualRate / 12;
+        const years = parseFloat(this.inputs.term.value) || 0;
+        const n = years * 12;
+        const fees = parseFloat(this.inputs.fees.value) || 0;
+
+        if (P <= 0 || n <= 0) {
+            return {
+                monthly: 0,
+                interest: 0,
+                total: 0,
+                principal: P,
+                n: n || 1,
+                monthlyRate: monthlyRate
+            };
+        }
+
+        let monthlyPayment;
+        if (monthlyRate === 0) {
+            monthlyPayment = P / n;
+        } else {
+            monthlyPayment = (P * monthlyRate * Math.pow(1 + monthlyRate, n)) / 
+                             (Math.pow(1 + monthlyRate, n) - 1);
+        }
+
+        const totalRepayment = (monthlyPayment * n) + fees;
+        const totalInterest = totalRepayment - P - fees;
+
+        return {
+            monthly: monthlyPayment,
+            interest: totalInterest,
+            total: totalRepayment,
+            principal: P,
+            n: n,
+            monthlyRate: monthlyRate,
+            fees: fees
+        };
+    }
+
+    updateUI() {
+        const data = this.calculate();
+        if (!data) return;
+
+        // تنسيق الأرقام مع إضافة فواصل الآلاف
+        const formatNumber = (num) => {
+            if (num === 0) return '0';
+            return Math.round(num).toLocaleString('ar-SA');
+        };
+
+        // تحديث الأرقام المعروضة
+        this.outputs.monthly.innerText = formatNumber(data.monthly);
+        this.outputs.interest.innerText = formatNumber(data.interest);
+        this.outputs.total.innerText = formatNumber(data.total);
+
+        this.renderChart(data.principal, data.interest + data.fees);
+    }
+    
+    showSuccessMessage() {
+        this.successMessage.classList.remove('hidden');
+        this.successMessage.style.opacity = '1';
+        
+        // إخفاء الرسالة بعد 3 ثوان
+        setTimeout(() => {
+            this.successMessage.style.opacity = '0';
+            setTimeout(() => {
+                this.successMessage.classList.add('hidden');
+                this.successMessage.style.opacity = '1';
+            }, 500);
+        }, 3000);
+    }
+
+    renderChart(principal, interest) {
+        const ctx = document.getElementById('loanChart').getContext('2d');
+        if (this.chart) this.chart.destroy();
+
+        // التأكد من أن القيم موجبة
+        principal = Math.max(0, principal);
+        interest = Math.max(0, interest);
+
+        this.chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['أصل القرض', 'الفوائد والرسوم'],
+                datasets: [{
+                    data: [principal, interest],
+                    backgroundColor: ['#2563eb', '#10b981'],
+                    hoverBackgroundColor: ['#1d4ed8', '#059669'],
+                    hoverOffset: 15,
+                    borderWidth: 0,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        titleFont: { family: 'Tajawal', size: 14 },
+                        bodyFont: { family: 'Tajawal', size: 13 },
+                        callbacks: {
+                            label: (context) => {
+                                const value = context.raw || 0;
+                                return `${context.label}: ${Math.round(value).toLocaleString('ar-SA')} ريال`;
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: 10
+                }
+            }
+        });
+    }
+
+    generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const data = this.calculate();
+        
+        if (!data || data.principal <= 0) {
+            alert("❌ يرجى إدخال بيانات صحيحة أولاً");
+            return;
+        }
+
+        // عنوان الملف بالعربية
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.text("جدول سداد التمويل", 105, 20, { align: 'center' });
+        
+        // معلومات التمويل
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}`, 20, 35);
+        
+        // إطار ملخص البيانات
+        doc.setDrawColor(37, 99, 235);
+        doc.setLineWidth(0.5);
+        doc.rect(15, 40, 180, 45);
+        
+        // ملخص البيانات
+        doc.setFontSize(11);
+        doc.text(`مبلغ القرض: ${Math.round(data.principal).toLocaleString('ar-SA')} ريال`, 20, 50);
+        doc.text(`القسط الشهري: ${Math.round(data.monthly).toLocaleString('ar-SA')} ريال`, 20, 58);
+        doc.text(`إجمالي الفوائد: ${Math.round(data.interest).toLocaleString('ar-SA')} ريال`, 20, 66);
+        doc.text(`الرسوم الإدارية: ${Math.round(data.fees).toLocaleString('ar-SA')} ريال`, 20, 74);
+        doc.text(`إجمالي السداد: ${Math.round(data.total).toLocaleString('ar-SA')} ريال`, 20, 82);
+
+        // جدول السنوات الخمس الأولى
+        const rows = [];
+        let balance = data.principal;
+        let totalPaid = 0;
+        
+        for (let i = 1; i <= Math.min(data.n, 60); i++) {
+            const intComp = balance * data.monthlyRate;
+            const prinComp = data.monthly - intComp;
+            balance -= prinComp;
+            totalPaid += data.monthly;
+            
+            // التأكد من عدم وجود قيم سالبة
+            const currentBalance = Math.max(0, Math.round(balance));
+            const currentInterest = Math.max(0, Math.round(intComp));
+            
+            rows.push([
+                i,
+                Math.round(data.monthly).toLocaleString('ar-SA'),
+                Math.round(prinComp).toLocaleString('ar-SA'),
+                currentInterest.toLocaleString('ar-SA'),
+                currentBalance.toLocaleString('ar-SA')
+            ]);
+        }
+
+        doc.autoTable({
+            head: [['الشهر', 'القسط', 'أصل الدين', 'الفائدة', 'المتبقي']],
+            body: rows,
+            startY: 95,
+            styles: { 
+                font: 'helvetica',
+                fontSize: 8,
+                halign: 'center',
+                lineColor: [200, 200, 200],
+                lineWidth: 0.1
+            },
+            headStyles: { 
+                fillColor: [37, 99, 235],
+                textColor: [255, 255, 255],
+                fontSize: 9,
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+                fillColor: [245, 245, 245]
+            },
+            margin: { top: 95 }
+        });
+
+        // إضافة خاتمة
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.text("* هذا الجدول تقريبي بدقة 99% وقد يختلف قليلاً حسب سياسة البنك", 105, finalY, { align: 'center' });
+        doc.text("© حاسبة التمويل الذكية - جميع الحقوق محفوظة", 105, finalY + 7, { align: 'center' });
+
+        doc.save("جدول_السداد_التمويلي.pdf");
+        
+        // إظهار رسالة نجاح
+        alert("✅ تم تحميل ملف PDF بنجاح");
+    }
+}
+
+// البدء عند جاهزية المتصفح
+window.addEventListener('DOMContentLoaded', () => {
+    new LoanCalculator();
+});
