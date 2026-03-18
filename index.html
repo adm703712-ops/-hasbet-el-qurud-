@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة القروض والتمويل العقاري | احسب قسطك الشهري بدقة</title>
+    <meta name="description" content="أداة مجانية وسريعة لحساب أقساط القروض والتمويل العقاري. احسب الفائدة الإجمالية وجدول السداد الشهري بخطوة واحدة.">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "حاسبة القروض والتمويل العقاري",
+        "description": "أداة مجانية لحساب أقساط القروض والتمويل العقاري بدقة عالية",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
+        }
+    }
+    </script>
+    
+    <style>
+        /* Dark Mode Styles */
+        @media (prefers-color-scheme: dark) {
+            body { 
+                background-color: #0f172a; 
+                color: #f1f5f9; 
+            }
+        }
+        .dark {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 transition-all duration-300 p-4 md:p-8">
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            حاسبة القروض والتمويل العقاري
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300">احسب قسطك الشهري بدقة عالية في ثوان</p>
+    </header>
+
+    <!-- Ad Top Placeholder -->
+    <div id="ad-top" class="bg-gray-100 dark:bg-slate-800 p-6 rounded-xl mb-8 text-center border-2 border-dashed border-gray-300 dark:border-slate-600">
+        <p class="text-sm text-gray-500 dark:text-gray-400">مساحة إعلانية علوية - Google AdSense</p>
+    </div>
+
+    <div class="max-w-2xl mx-auto">
+        <!-- Calculator Form -->
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-2xl rounded-3xl p-8 mb-8 border border-white/50 dark:border-slate-700/50">
+            <form id="loanForm" class="space-y-6">
+                <!-- Loan Amount -->
+                <div>
+                    <label for="loanAmount" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        مبلغ القرض
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">ر.س</span>
+                        <input type="number" id="loanAmount" required 
+                               class="w-full pl-12 pr-4 py-4 border border-gray-300 dark:border-slate-600 rounded-2xl bg-white/50 dark:bg-slate-700/50 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300 text-lg" 
+                               placeholder="500,000" min="1000" step="1000">
+                    </div>
+                </div>
+
+                <!-- Interest Rate -->
+                <div>
+                    <label for="interestRate" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        نسبة الفائدة السنوية (%)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">%</span>
+                        <input type="number" id="interestRate" required 
+                               class="w-full pl-12 pr-4 py-4 border border-gray-300 dark:border-slate-600 rounded-2xl bg-white/50 dark:bg-slate-700/50 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300 text-lg" 
+                               placeholder="4.5" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+
+                <!-- Loan Term -->
+                <div>
+                    <label for="loanTerm" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                        مدة القرض (سنوات)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">سنة</span>
+                        <input type="number" id="loanTerm" required 
+                               class="w-full pl-20 pr-4 py-4 border border-gray-300 dark:border-slate-600 rounded-2xl bg-white/50 dark:bg-slate-700/50 focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-300 text-lg" 
+                               placeholder="25" min="1" max="50">
+                    </div>
+                </div>
+
+                <!-- Ad Action Placeholder -->
+                <div id="ad-action" class="bg-yellow-50 dark:bg-yellow-900/20 p-6 rounded-2xl border-2 border-dashed border-yellow-300 dark:border-yellow-500 mb-6 text-center">
+                    <p class="text-sm text-yellow-800 dark:text-yellow-200 font-medium">إعلان مميز - أفضل عروض التمويل العقاري</p>
+                </div>
+
+                <!-- Calculate Button -->
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-6 px-8 rounded-2xl text-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
+                    احسب - Calculate
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Section (Hidden Initially) -->
+        <div id="results" class="hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border border-white/50 dark:border-slate-700/50 mb-8">
+            <!-- Ad Results Placeholder -->
+            <div id="ad-results" class="bg-green-50 dark:bg-green-900/20 p-6 rounded-2xl border-2 border-dashed border-green-300 dark:border-green-500 mb-8 text-center">
+                <p class="text-sm text-green-800 dark:text-green-200 font-medium">إعلان نتائج - عروض تمويل خاصة</p>
+            </div>
+
+            <!-- Results Cards -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-500/20 to-purple-500/20 p-8 rounded-2xl border border-blue-200/50 backdrop-blur-sm text-center">
+                    <h3 class="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">القسط الشهري</h3>
+                    <div class="text-4xl font-black text-blue-600 dark:text-blue-400" id="monthlyPayment">0</div>
+                    <div class="text-sm text-blue-600 dark:text-blue-400 font-medium mt-2">ر.س</div>
+                </div>
+                <div class="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 p-8 rounded-2xl border border-emerald-200/50 backdrop-blur-sm text-center">
+                    <h3 class="text-2xl font-bold text-emerald-700 dark:text-emerald-300 mb-2">إجمالي الفائدة</h3>
+                    <div class="text-4xl font-black text-emerald-600 dark:text-emerald-400" id="totalInterest">0</div>
+                    <div class="text-sm text-emerald-600 dark:text-emerald-400 font-medium mt-2">ر.س</div>
+                </div>
+            </div>
+
+            <!-- Total Amount -->
+            <div class="bg-gradient-to-r from-orange-500/10 to-red-500/10 p-8 rounded-2xl border border-orange-200/50 text-center mb-8 backdrop-blur-sm">
+                <h3 class="text-xl font-bold text-orange-700 dark:text-orange-300 mb-2">إجمالي المبلغ المستحق</h3>
+                <div class="text-5xl font-black text-orange-600 dark:text-orange-400" id="totalAmount">0</div>
+                <div class="text-sm text-orange-600 dark:text-orange-400 font-medium mt-2">ر.س</div>
+            </div>
+
+            <!-- Doughnut Chart -->
+            <div class="bg-white/50 dark:bg-slate-700/50 p-6 rounded-2xl border border-white/30 mb-8">
+                <h3 class="text-xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">توزيع القسط الشهري</h3>
+                <canvas id="loanChart" width="400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <section class="max-w-4xl mx-auto space-y-12 mt-16">
+        <!-- How to Use -->
+        <div class="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl p-8 rounded-3xl shadow-xl border border-white/50 dark:border-slate-700/50">
+            <h2 class="text-3xl font-bold text-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-8">
+                كيفية استخدام حاسبة القروض؟
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center p-6 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200/50">
+                    <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-white">1</div>
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 dark:text-gray-200">أدخل البيانات</h3>
+                    <p class="text-gray-600 dark:text-gray-300">املأ مبلغ القرض ونسبة الفائدة ومدة القرض</p>
+                </div>
+                <div class="text-center p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200/50">
+                    <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-white">2</div>
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 dark:text-gray-200">اضغط احسب</h3>
+                    <p class="text-gray-600 dark:text-gray-300">ستحصل على النتائج فوراً بدقة عالية</p>
+                </div>
+                <div class="text-center p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-200/50">
+                    <div class="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-white">3</div>
+                    <h3 class="font-bold text-xl mb-3 text-gray-800 dark:text-gray-200">راجع النتائج</h3>
+                    <p class="text-gray-600 dark:text-gray-300">شاهد القسط الشهري والرسم البياني والتوزيع الكلي</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-8 rounded-3xl shadow-xl border border-amber-200/50">
+            <h2 class="text-3xl font-bold text-center bg-gradient-to-r from-amber-700 to-orange-600 bg-clip-text text-transparent mb-8">
+                نصائح لتقليل فوائد القرض العقاري
+            </h2>
+            <div class="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p>اختيار فترة تمويل أقصر يقلل من إجمالي الفوائد المدفوعة بشكل كبير، لأن الفائدة تتراكم على مدة أقل. كما أن دفع قسط إضافي شهري صغير (مثل 5-10% من القسط) يمكن أن يوفر آلاف الريالات في الفوائد.</p>
+                <p>قارن بين البنوك والبرامج التمويلية المختلفة، فالاختلاف في نسبة الفائدة بنسبة 0.5% فقط يمكن أن يوفر عشرات الآلاف على مدار 25 سنة. استخدم حاسبتنا لمقارنة السيناريوهات المختلفة.</p>
+                <p>الدفع المبكر لجزء من القرض (خاصة في السنوات الأولى) فعال جداً لأن الفائدة تتركز في بداية فترة السداد. كما أن اختيار بنك يسمح بالسداد المبكر بدون غرامات يوفر مرونة كبيرة.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Loan Calculator Logic
+        document.getElementById('loanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get input values
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const annualRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12; // Monthly rate
+            const loanTerm = parseInt(document.getElementById('loanTerm').value) * 12; // In months
+            
+            // Calculate monthly payment (PMT formula)
+            const monthlyPayment = (loanAmount * annualRate * Math.pow(1 + annualRate, loanTerm)) / 
+                                 (Math.pow(1 + annualRate, loanTerm) - 1);
+            
+            // Calculate total interest and total amount
+            const totalAmount = monthlyPayment * loanTerm;
+            const totalInterest = totalAmount - loanAmount;
+            
+            // Display results
+            document.getElementById('monthlyPayment').textContent = monthlyPayment.toLocaleString('ar-SA', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            document.getElementById('totalInterest').textContent = totalInterest.toLocaleString('ar-SA', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            document.getElementById('totalAmount').textContent = totalAmount.toLocaleString('ar-SA', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            
+            // Show results section
+            document.getElementById('results').classList.remove('hidden');
+            
+            // Create Doughnut Chart
+            createChart(loanAmount, totalInterest);
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Chart.js Doughnut Chart
+        let chart;
+        function createChart(principal, interest) {
+            const ctx = document.getElementById('loanChart').getContext('2d');
+            
+            if (chart) chart.destroy();
+            
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['أصل القرض', 'إجمالي الفائدة'],
+                    datasets: [{
+                        data: [principal, interest],
+                        backgroundColor: [
+                            'rgb(59, 130, 246)',  // Blue
+                            'rgb(16, 185, 129)'   // Emerald
+                        ],
+                        borderColor: ['rgb(59, 130, 246)', 'rgb(16, 185, 129)'],
+                        borderWidth: 3,
+                        cutout: '60%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    family: 'system-ui, -apple-system'
+                                },
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Input formatting
+        ['loanAmount', 'interestRate', 'loanTerm'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9.]/g, '');
+            });
+        });
+    </script>
+</body>
+</html>
+
