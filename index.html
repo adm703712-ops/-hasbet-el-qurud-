@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة القروض والتمويل العقاري الذكية | احسب قسطك فوراً</title>
+    <meta name="description" content="أداة مجانية لحساب أقساط القروض والتمويل العقاري بدقة مع رسم بياني توضيحي وتحديث لحظي للنتائج.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com');
+        body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
+        .ad-placeholder { background: #e5e7eb; border: 2px dashed #9ca3af; text-align: center; padding: 20px; margin: 15px 0; border-radius: 8px; color: #4b5563; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <!-- Header & Ad Top -->
+        <div class="p-6 bg-blue-600 text-white text-center">
+            <h1 class="text-2xl md:text-3xl font-bold">حاسبة القروض والتمويل العقاري</h1>
+            <p class="mt-2 opacity-90">خطط لمستقبلك المالي بدقة وسهولة</p>
+        </div>
+
+        <div class="ad-placeholder" id="ad-top">مساحة إعلانية علوية (تظهر هنا بعد القبول)</div>
+
+        <div class="grid md:grid-cols-2 gap-8 p-6 md:p-10">
+            <!-- Inputs Section -->
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">مبلغ القرض (ريال/درهم/جنيه)</label>
+                    <input type="number" id="amount" value="100000" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">مدة القرض (سنوات)</label>
+                    <input type="number" id="years" value="5" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">نسبة الفائدة السنوية (%)</label>
+                    <input type="number" id="rate" value="5" step="0.1" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+                
+                <div class="ad-placeholder" id="ad-middle">إعلان (صائد النقرات) يظهر فوق النتائج</div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col justify-center">
+                <div class="text-center mb-6">
+                    <span class="text-gray-500 block text-lg">قسطك الشهري المتوقع</span>
+                    <span id="monthlyPayment" class="text-4xl font-bold text-blue-600">0.00</span>
+                </div>
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span>إجمالي الفوائد:</span>
+                        <span id="totalInterest" class="font-bold text-red-500">0.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>إجمالي المبلغ المستحق:</span>
+                        <span id="totalPayment" class="font-bold text-gray-800">0.00</span>
+                    </div>
+                </div>
+
+                <!-- Visual Bar (Replacement for Chart.js) -->
+                <div class="mt-8">
+                    <div class="text-xs text-gray-500 mb-1 flex justify-between">
+                        <span>الأصل</span>
+                        <span>الفوائد</span>
+                    </div>
+                    <div class="w-full h-4 bg-red-200 rounded-full flex overflow-hidden">
+                        <div id="barPrincipal" class="bg-blue-500 h-full transition-all duration-500" style="width: 70%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Article Section (For AdSense Approval) -->
+        <div class="p-8 border-t border-gray-100 bg-white">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">كيف تختار أفضل قرض عقاري أو شخصي؟</h2>
+            <p class="text-gray-600 leading-relaxed mb-4">
+                عند استخدامك لـ <strong>حاسبة القروض</strong>، يجب أن تضع في اعتبارك أن النسبة المعلنة من البنوك قد تختلف عن النسبة الفعلية. التخطيط المالي السليم يبدأ بمعرفة قدرتك على السداد الشهري دون التأثير على نمط حياتك الأساسي.
+            </p>
+            <h3 class="text-lg font-bold text-gray-700 mb-2">نصائح لتقليل تكلفة القرض:</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+                <li>حاول دفع دفعة مقدمة أكبر لتقليل أصل المبلغ.</li>
+                <li>اختر مدة سداد أقصر لتقليل إجمالي الفوائد المتراكمة.</li>
+                <li>قارن بين الفائدة الثابتة والفائدة المتناقصة قبل التوقيع.</li>
+            </ul>
+            <div class="ad-placeholder" id="ad-bottom">إعلان سفلي لزيادة الأرباح</div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="p-4 bg-gray-100 text-center text-xs text-gray-500">
+            <p>© 2026 حاسبة القروض الذكية - جميع الحقوق محفوظة</p>
+            <div class="mt-2 space-x-4">
+                <a href="#" class="hover:underline">سياسة الخصوصية</a>
+                <a href="#" class="hover:underline">اتصل بنا</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const amountInput = document.getElementById('amount');
+        const yearsInput = document.getElementById('years');
+        const rateInput = document.getElementById('rate');
+
+        const monthlyDisplay = document.getElementById('monthlyPayment');
+        const interestDisplay = document.getElementById('totalInterest');
+        const totalDisplay = document.getElementById('totalPayment');
+        const barPrincipal = document.getElementById('barPrincipal');
+
+        function calculate() {
+            const principal = parseFloat(amountInput.value);
+            const calculatedInterest = parseFloat(rateInput.value) / 100 / 12;
+            const calculatedPayments = parseFloat(yearsInput.value) * 12;
+
+            if (isNaN(principal) || isNaN(calculatedInterest) || isNaN(calculatedPayments) || principal <= 0) {
+                return;
+            }
+
+            // Formula for monthly payment: [P * i * (1 + i)^n] / [(1 + i)^n - 1]
+            const x = Math.pow(1 + calculatedInterest, calculatedPayments);
+            const monthly = (principal * x * calculatedInterest) / (x - 1);
+
+            if (isFinite(monthly)) {
+                const totalPayment = monthly * calculatedPayments;
+                const totalInterest = totalPayment - principal;
+
+                monthlyDisplay.innerText = monthly.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                interestDisplay.innerText = totalInterest.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                totalDisplay.innerText = totalPayment.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                // Update Visual Bar
+                const principalPercent = (principal / totalPayment) * 100;
+                barPrincipal.style.width = principalPercent + "%";
+            }
+        }
+
+        // Event Listeners for Real-time update
+        [amountInput, yearsInput, rateInput].forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        // Initial Calculation
+        calculate();
+    </script>
+</body>
+</html>
+
